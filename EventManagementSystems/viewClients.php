@@ -1,8 +1,8 @@
 <?php
 require_once 'utils/functions.php';
 require_once 'classes/DB.php';
-require_once 'classes/Location.php';
-require_once 'classes/LocationTableGateway.php';
+require_once 'classes/Client.php';
+require_once 'classes/ClientTableGateway.php';
 require_once 'classes/Connection.php';
 
 if (!is_logged_in()) {
@@ -10,16 +10,16 @@ if (!is_logged_in()) {
 }
 
 $connection = Connection::getInstance();
-$gateway = new LocationTableGateway($connection);
+$gateway = new ClientTableGateway($connection);
 
-$statement = $gateway->getLocations();
+$statement = $gateway->getClients();
 ?>
 
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Venues - Laxmi Trimbak Lawns</title>
+        <title>Client Management - Laxmi Trimbak Lawns</title>
         <?php require 'utils/styles.php'; ?>
         <?php require 'utils/scripts.php'; ?>
     </head>
@@ -28,7 +28,7 @@ $statement = $gateway->getLocations();
         <div class="content">
             <div class="container">
                 <div class="col-md-12">
-                    <h1>Venues</h1>
+                    <h1>Client Management</h1>
                 </div>
             </div>
             
@@ -40,41 +40,43 @@ $statement = $gateway->getLocations();
             
             <div class="container">
                 <div class="col-md-12">
-                    <?php if (isset($message)) { ?>
+                    <?php if (isset($message)): ?>
                         <div class="alert alert-success">
                             <?php echo $message; ?>
                         </div>
-                    <?php } ?>
+                    <?php endif; ?>
                     
-                    <a class="btn btn-success" href="createLocationForm.php">Create Venue</a>
+                    <a href="createClient.php" class="btn btn-success pull-right">
+                        <span class="glyphicon glyphicon-plus"></span> Add New Client
+                    </a>
                     <br><br>
-                    <table class="table table-striped">
+                    
+                    <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th>Venue Name</th>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
                                 <th>Address</th>
-                                <th>Manager</th>
-                                <th>Max Capacity</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
-                            $row = $statement->fetch(PDO::FETCH_ASSOC);
-                            while ($row) {
+                            while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
                                 echo '<tr>';
-                                echo '<td>' . $row['Name'] . '</td>';
+                                echo '<td>' . $row['ClientID'] . '</td>';
+                                echo '<td>' . $row['FirstName'] . ' ' . $row['LastName'] . '</td>';
+                                echo '<td>' . $row['Email'] . '</td>';
+                                echo '<td>' . $row['Phone'] . '</td>';
                                 echo '<td>' . $row['Address'] . '</td>';
-                                echo '<td>' . $row['ManagerFName'] . ' ' . $row['ManagerLName'] . '</td>';
-                                echo '<td>' . $row['MaxCapacity'] . '</td>';
                                 echo '<td>'
-                                . '<a class="btn btn-info" href="viewLocation.php?id=' . $row['LocationID'] . '">View</a> '
-                                . '<a class="btn btn-warning" href="editLocationForm.php?id=' . $row['LocationID'] . '">Edit</a> '
-                                . '<a class="btn btn-danger" href="deleteLocation.php?id=' . $row['LocationID'] . '">Delete</a> '
+                                . '<a href="viewClient.php?id=' . $row['ClientID'] . '" class="btn btn-xs btn-info">View</a> '
+                                . '<a href="editClient.php?id=' . $row['ClientID'] . '" class="btn btn-xs btn-warning">Edit</a> '
+                                . '<a href="deleteClient.php?id=' . $row['ClientID'] . '" class="btn btn-xs btn-danger" onclick="return confirm(\'Are you sure you want to delete this client?\')">Delete</a>'
                                 . '</td>';
-                                echo '</tr>';  
-                                
-                                $row = $statement->fetch(PDO::FETCH_ASSOC);
+                                echo '</tr>';
                             }
                             ?>
                         </tbody>

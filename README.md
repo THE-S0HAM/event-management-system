@@ -1,6 +1,6 @@
-# Event Management System
+# Laxmi Trimbak Lawns - Wedding Venue Management System
 
-A PHP-based event management system for creating, managing, and tracking events and locations.
+A PHP-based wedding venue management system for Laxmi Trimbak Lawns, a wedding lawn service provider located in Waladgaon, Shrirampur, Maharashtra 413709.
 
 ## Setup Instructions
 
@@ -21,7 +21,7 @@ A PHP-based event management system for creating, managing, and tracking events 
 3. **Set up the database**
    - Open phpMyAdmin (http://localhost/phpmyadmin)
    - Create a new database named `evm_db`
-   - Import the SQL file from `EventManagementSystems\sql\maharashtra_data.sql`
+   - Import the SQL file from `EventManagementSystems\sql\laxmi_trimbak_lawns.sql`
 
 4. **Access the application**
    - Open your web browser and navigate to:
@@ -37,8 +37,48 @@ A PHP-based event management system for creating, managing, and tracking events 
 
 Or
 
-- Username: `suresh`
-- Password: `suresh123`
+- Username: `manager`
+- Password: `manager123`
+
+## Features
+
+### Branding & Identity
+- Customized for Laxmi Trimbak Lawns with appropriate business name, address, and contact information
+- Indian-style venue names (Mangal Karyalay, Vivah Hall, Lawn A)
+
+### Online Booking System
+- View real-time lawn availability
+- Book dates with confirmation messages
+- Select from various Indian ceremony types and decoration themes
+
+### Event Scheduling Module
+- Add slots for: Ceremony Timing, Decoration Theme, Catering, DJ
+- Choose from traditional Indian wedding ceremony types
+
+### Client Management
+- Create/edit/delete client profiles
+- Include fields for special instructions and full payment history
+- Track client events and preferences
+
+### Payment Management
+- Record and track payments
+- Support for multiple payment methods
+- Payment status tracking (Advance, Partial, Completed)
+
+### Feedback & Reports
+- Allow clients to rate services and submit feedback
+- Generate printable/downloadable reports for internal use
+
+## Venue Information
+
+### Laxmi Trimbak Lawns
+- Address: JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709
+- Email: laxmitribaklawns@gmail.com
+
+### Available Venues
+1. **Mangal Karyalay** - Premium venue for large weddings (Capacity: 500)
+2. **Vivah Hall** - Perfect for engagement ceremonies and smaller gatherings (Capacity: 300)
+3. **Lawn A** - Spacious outdoor venue for grand celebrations (Capacity: 800)
 
 ## Troubleshooting
 
@@ -54,9 +94,3 @@ Or
 
 3. **Permission Issues**
    - Ensure XAMPP has proper permissions to access the project folder
-
-## Features
-- Event creation and management
-- Location management
-- User authentication
-- Responsive design

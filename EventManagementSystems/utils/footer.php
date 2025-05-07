@@ -5,32 +5,33 @@
             <section>
                 <div class = "footerContent col-md-4"><!--left content-->
                     <p class = "footerContent1">
-                        <strong>I</strong><span class = "small footerSubtext">nstitute of</span>
-                        <strong>A</strong><span class = "small footerSubtext">rt</span>
-                        <strong>D</strong><span class = "small footerSubtext">esign and</span>
-                        <strong>T</strong><span class = "small footerSubtext">echnology</span>
+                        <strong>L</strong><span class = "small footerSubtext">axmi</span>
+                        <strong>T</strong><span class = "small footerSubtext">rimbak</span>
+                        <strong>L</strong><span class = "small footerSubtext">awns</span>
                     </p>
 
                     <p class = "footerSubtext2">
-                        Kill Avenue, Dun Laoghaire, Co. Dublin
-                        &copy; Urban Events Venue & Catering, 2016.
+                        JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709
+                        &copy; Laxmi Trimbak Lawns, <?php echo date('Y'); ?>.
                     </p>
                 </div>
             </section>
             <section>
                 <div class = "footcontent col-md-4"><!--middle content-->
-                    DL824 Multimedia Design/Web Engineering<br>
-                    Creative Computing 2015-2016.<br>
-                    Julz Engracio, N00145647
+                    <p>
+                        <strong>Contact Us</strong><br>
+                        Email: laxmitribaklawns@gmail.com<br>
+                        Phone: <span id="phoneNumber">Contact for details</span>
+                    </p>
                 </div>
             </section>
             <section>
                 <div class = "footcontent col-md-4"><!--right content-->
                     Follow Us:<br>
-                        <img src = "images/facebook.png">
-                        <img src = "images/twitter.png">
-                        <img src = "images/googleplus.png">
-                        <img src = "images/youtube.png">
+                        <a href="#"><img src = "images/facebook.png"></a>
+                        <a href="#"><img src = "images/twitter.png"></a>
+                        <a href="#"><img src = "images/googleplus.png"></a>
+                        <a href="#"><img src = "images/youtube.png"></a>
                 </div>
             </section>
         </div>

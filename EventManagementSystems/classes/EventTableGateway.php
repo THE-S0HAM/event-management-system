@@ -11,9 +11,10 @@ class EventTableGateway {
     
     public function getEvents() {
         // execute a query to get all events
-        $sqlQuery = "SELECT e.*, l.name " .
+        $sqlQuery = "SELECT e.*, l.name, c.FirstName, c.LastName " .
                     "FROM events e " .
-                    "LEFT JOIN locations l ON e.locationID = l.locationID";
+                    "LEFT JOIN locations l ON e.locationID = l.locationID " .
+                    "LEFT JOIN clients c ON e.clientID = c.clientID";
         
         $statement = $this->connect->prepare($sqlQuery);
         $status = $statement->execute();
@@ -27,9 +28,10 @@ class EventTableGateway {
     
     public function getEventsByLocationId($id) {
         // execute a query to get all events
-        $sqlQuery = "SELECT e.*, l.name " .
+        $sqlQuery = "SELECT e.*, l.name, c.FirstName, c.LastName " .
                     "FROM events e " .
                     "LEFT JOIN locations l ON e.locationID = l.locationID " .
+                    "LEFT JOIN clients c ON e.clientID = c.clientID " .
                     "WHERE e.locationID=:locationId";
         
         $params = array(
@@ -63,9 +65,34 @@ class EventTableGateway {
         return $statement;
     }
     
+    public function getAvailableDates($locationID, $startDate, $endDate) {
+        // Check if the location is available for the given dates
+        $sqlQuery = "SELECT COUNT(*) as count FROM events 
+                    WHERE locationID = :locationID 
+                    AND ((StartDate BETWEEN :startDate AND :endDate) 
+                    OR (EndDate BETWEEN :startDate AND :endDate)
+                    OR (:startDate BETWEEN StartDate AND EndDate))";
+        
+        $statement = $this->connect->prepare($sqlQuery);
+        $params = array(
+            "locationID" => $locationID,
+            "startDate" => $startDate,
+            "endDate" => $endDate
+        );
+        
+        $status = $statement->execute($params);
+        
+        if (!$status) {
+            die("Could not check availability");
+        }
+        
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] == 0; // Returns true if available
+    }
+    
     public function insert($p) {
-        $sql = "INSERT INTO events(Title, Description, StartDate, EndDate, Cost, LocationID) " .
-                "VALUES (:Title, :Description, :StartDate, :EndDate, :Cost, :LocationID)";
+        $sql = "INSERT INTO events(Title, Description, StartDate, EndDate, Cost, LocationID, CeremonyType, DecorationTheme, CateringOption, ClientID) " .
+                "VALUES (:Title, :Description, :StartDate, :EndDate, :Cost, :LocationID, :CeremonyType, :DecorationTheme, :CateringOption, :ClientID)";
         
         $statement = $this->connect->prepare($sql);
         $params = array(
@@ -74,16 +101,14 @@ class EventTableGateway {
             "StartDate"       => $p->getStartDate(),
             "EndDate"         => $p->getEndDate(),
             "Cost"            => $p->getCost(),
-            "LocationID"      => $p->getLocationID()
+            "LocationID"      => $p->getLocationID(),
+            "CeremonyType"    => $p->getCeremonyType(),
+            "DecorationTheme" => $p->getDecorationTheme(),
+            "CateringOption"  => $p->getCateringOption(),
+            "ClientID"        => $p->getClientID()
         );
         
-        echo "<pre>";
-        print_r($p);
-        print_r($params);
-        echo "</pre>";
-        
         $status = $statement->execute($params);
-        
         
         if (!$status) {
             die("Could not insert event");
@@ -102,7 +127,11 @@ class EventTableGateway {
                 "EndDate = :EndDate, " .
                 "Cost = :Cost, " .
                 "LocationID = :LocationID, " .
-                " WHERE eventID = :id";
+                "CeremonyType = :CeremonyType, " .
+                "DecorationTheme = :DecorationTheme, " .
+                "CateringOption = :CateringOption, " .
+                "ClientID = :ClientID " .
+                "WHERE eventID = :id";
         
         $statement = $this->connect->prepare($sql);
         $params = array(
@@ -112,14 +141,12 @@ class EventTableGateway {
             "EndDate"        => $p->getEndDate(),
             "Cost"           => $p->getCost(),
             "LocationID"     => $p->getLocationID(),
+            "CeremonyType"   => $p->getCeremonyType(),
+            "DecorationTheme" => $p->getDecorationTheme(),
+            "CateringOption" => $p->getCateringOption(),
+            "ClientID"       => $p->getClientID(),
             "id"             => $p->getId()
         );
-        
-        echo "<pre>";
-        print_r($p);
-        print_r($params);
-        print_r($statement);
-        echo "</pre>";
         
         $status = $statement->execute($params);
         
@@ -142,5 +169,39 @@ class EventTableGateway {
         }
     }    
 
+    public function getCeremonyTypes() {
+        $sqlQuery = "SELECT * FROM ceremony_types ORDER BY CeremonyName";
+        $statement = $this->connect->prepare($sqlQuery);
+        $status = $statement->execute();
+        
+        if (!$status) {
+            die("Could not retrieve ceremony types");
+        }
+        
+        return $statement;
+    }
     
+    public function getDecorationThemes() {
+        $sqlQuery = "SELECT * FROM decoration_themes ORDER BY ThemeName";
+        $statement = $this->connect->prepare($sqlQuery);
+        $status = $statement->execute();
+        
+        if (!$status) {
+            die("Could not retrieve decoration themes");
+        }
+        
+        return $statement;
+    }
+    
+    public function getCateringOptions() {
+        $sqlQuery = "SELECT * FROM catering_options ORDER BY OptionName";
+        $statement = $this->connect->prepare($sqlQuery);
+        $status = $statement->execute();
+        
+        if (!$status) {
+            die("Could not retrieve catering options");
+        }
+        
+        return $statement;
+    }
 }

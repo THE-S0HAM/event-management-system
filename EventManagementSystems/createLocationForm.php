@@ -1,171 +1,98 @@
 <?php
-require_once 'functions.php';
+require_once 'utils/functions.php';
 
-if (!isset($formdata)) {
-    $formdata = array();
-}
-
-if (!isset($errors)) {
-    $errors = array();
+if (!is_logged_in()) {
+    header("Location: login_form.php");
 }
 ?>
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Create Location Form</title>
-        <style>
-            span.error{
-                color: red;
-            }            
-        </style>  
-        <?php require 'utils/styles.php'; ?><!--css links. file found in utils folder-->
-        <?php require 'utils/scripts.php'; ?><!--js links. file found in utils folder-->
+        <title>Create Venue - Laxmi Trimbak Lawns</title>
+        <?php require 'utils/styles.php'; ?>
+        <?php require 'utils/scripts.php'; ?>
     </head>
     <body>
-        <?php require 'utils/header.php'; ?><!--header content. file found in utils folder-->
+        <?php require 'utils/header.php'; ?>
         <div class="content">
             <div class="container">
-                <h1>Create Location Form</h1><!--form title-->
-                <?php 
-                if (isset($errorMessage)) {
-                    echo '<p>Error: ' . $errorMessage . '</p>';
-                }
-                ?>
+                <h1>Create Venue</h1>
+                <p>Please enter the details of the new venue below</p>
+                
                 <form action="createLocation.php" method="POST" class="form-horizontal">
                     <div class="form-group">
-                        <label for="Name" class="col-md-2 control-label">Location Name</label>
+                        <label for="Name" class="col-md-2 control-label">Venue Name</label>
                         <div class="col-md-5">
-                            <input type="text" class="form-control" id="Name" name="Name" value="<?php echoValue($formdata, "Name")?>" /><!--input-->
-                        </div>
-                        <div class="col-md-4">
-                            <span id="LNameError" class="error"><!--error message for invalid input-->
-                                <?php echoValue($errors, 'Name');?>
+                            <input type="text" class="form-control" id="Name" name="Name" value="<?php if (isset($formdata['Name'])) echo $formdata['Name']; ?>" />
+                            <span id="nameError" class="error">
+                                <?php if (isset($errors['Name'])) echo $errors['Name']; ?>
                             </span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="Address" class="col-md-2 control-label">Address</label>
                         <div class="col-md-5">
-                            <input type="text" class="form-control" id="Address" name="Address" value="<?php echoValue($formdata, "Address")?>" /><!--input-->
-                        </div>
-                        <div class="col-md-4">
-                            <span id="LAddressError" class="error"><!--error message for invalid input-->
-                                <?php echoValue($errors, 'Address');?>
+                            <input type="text" class="form-control" id="Address" name="Address" value="<?php if (isset($formdata['Address'])) echo $formdata['Address']; ?>" />
+                            <span id="addressError" class="error">
+                                <?php if (isset($errors['Address'])) echo $errors['Address']; ?>
                             </span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="managerFName" class="col-md-2 control-label">Manager First Name</label>
+                        <label for="ManagerFName" class="col-md-2 control-label">Manager First Name</label>
                         <div class="col-md-5">
-                            <input type="text" class="form-control" id="managerFName" name="managerFName" value="<?php echoValue($formdata, "managerFName")?>" /><!--input-->
-                        </div>
-                        <div class="col-md-4">
-                            <span id="mNameError" class="error"><!--error message for invalid input-->
-                                <?php echoValue($errors, 'managerFName');?>
+                            <input type="text" class="form-control" id="ManagerFName" name="ManagerFName" value="<?php if (isset($formdata['ManagerFName'])) echo $formdata['ManagerFName']; ?>" />
+                            <span id="managerFNameError" class="error">
+                                <?php if (isset($errors['ManagerFName'])) echo $errors['ManagerFName']; ?>
                             </span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="managerLName" class="col-md-2 control-label">Manager Last Name</label>
+                        <label for="ManagerLName" class="col-md-2 control-label">Manager Last Name</label>
                         <div class="col-md-5">
-                            <input type="text" class="form-control" id="managerName" name="managerLName" value="<?php echoValue($formdata, "managerLName")?>" /><!--input-->
-                        </div>
-                        <div class="col-md-4">
-                            <span id="mNameError" class="error"><!--error message for invalid input-->
-                                <?php echoValue($errors, 'managerLName');?>
+                            <input type="text" class="form-control" id="ManagerLName" name="ManagerLName" value="<?php if (isset($formdata['ManagerLName'])) echo $formdata['ManagerLName']; ?>" />
+                            <span id="managerLNameError" class="error">
+                                <?php if (isset($errors['ManagerLName'])) echo $errors['ManagerLName']; ?>
                             </span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="managerEmail" class="col-md-2 control-label">Manager Email</label>
+                        <label for="ManagerEmail" class="col-md-2 control-label">Manager Email</label>
                         <div class="col-md-5">
-                            <input type="email" class="form-control" id="managerEmail" name="managerEmail" value="<?php echoValue($formdata, "managerEmail")?>" /><!--input-->
-                        </div>
-                        <div class="col-md-4">
-                            <span id="mEmailError" class="error"><!--error message for invalid input-->
-                                <?php echoValue($errors, 'managerEmail');?>
+                            <input type="email" class="form-control" id="ManagerEmail" name="ManagerEmail" value="<?php if (isset($formdata['ManagerEmail'])) echo $formdata['ManagerEmail']; ?>" />
+                            <span id="managerEmailError" class="error">
+                                <?php if (isset($errors['ManagerEmail'])) echo $errors['ManagerEmail']; ?>
                             </span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="managerNumber" class="col-md-2 control-label">Manager Number</label>
+                        <label for="ManagerNumber" class="col-md-2 control-label">Manager Number</label>
                         <div class="col-md-5">
-                            <input type="number" class="form-control" id="managerNumber" name="managerNumber" value="<?php echoValue($formdata, "managerNumber")?>" /><!--input-->
-                        </div>
-                        <div class="col-md-4">
-                            <span id="mNumError" class="error"><!--error message for invalid input-->
-                                <?php echoValue($errors, 'managerNumber');?>
+                            <input type="text" class="form-control" id="ManagerNumber" name="ManagerNumber" value="<?php if (isset($formdata['ManagerNumber'])) echo $formdata['ManagerNumber']; ?>" />
+                            <span id="managerNumberError" class="error">
+                                <?php if (isset($errors['ManagerNumber'])) echo $errors['ManagerNumber']; ?>
                             </span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="locationMaxCap" class="col-md-2 control-label">Max Capacity</label>
+                        <label for="MaxCapacity" class="col-md-2 control-label">Maximum Capacity</label>
                         <div class="col-md-5">
-                            <input type="number" class="form-control" id="locationMaxCap" name="maxCap" value="<?php echoValue($formdata, "maxCap")?>" /><!--input-->
-                        </div>
-                        <div class="col-md-4">
-                            <span id="capError" class="error"><!--error message for invalid input-->
-                                <?php echoValue($errors, 'maxCap');?>
-                            </span>
-                        </div>
-                    </div>
-
-                <!--codes below has no connection with the database.-->
-                    <div class="form-group">
-                        <label class="col-md-2 control-label">Location Type</label><!--radio buttons with multiple options-->
-                        <div class="col-md-5">
-                            <input type="radio"  name="lType" value="indoor" <?php echoChecked($formdata, "lType", "indoor"); ?> >Indoor <br>
-                            <input type="radio" name="lType" value="outdoor" <?php echoChecked($formdata, "lType", "outdoor"); ?>>Outdoor <br>
-                            <input type="radio" name="lType" value="both" <?php echoChecked($formdata, "lType", "both"); ?>>Both
-                        </div>
-                        <div class="col-md-4">
-                            <span id="typeError" class="error">
-
+                            <input type="number" class="form-control" id="MaxCapacity" name="MaxCapacity" value="<?php if (isset($formdata['MaxCapacity'])) echo $formdata['MaxCapacity']; ?>" />
+                            <span id="maxCapacityError" class="error">
+                                <?php if (isset($errors['MaxCapacity'])) echo $errors['MaxCapacity']; ?>
                             </span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-md-2 control-label">Seating Available</label>
-                        <div class="col-md-5">
-                            <select class="form-control" name="seat">
-                                <option value="yes" <?php echoSelected($formdata, "seat", "yes"); ?>>Yes</option>
-                                <option value="no" <?php echoSelected($formdata, "seat", "no"); ?>>No</option>
-                            </select>
-                        </div>
-                    </div>    
-                    <div class="form-group">
-                        <label class="col-md-2 control-label">Facilities</label>
-                        <div class="col-md-5">
-                            <input type="checkbox" name="facilities[]" value="sound" <?php echoCheckedArray($formdata, 'facilities', 'sound'); ?> >Sound Room <br>
-                            <input type="checkbox" name="facilities[]" value="screen" <?php echoCheckedArray($formdata, "facilities", "screen"); ?> >Big Screen Room <br>
-                            <input type="checkbox" name="facilities[]" value="restaurant" <?php echoCheckedArray($formdata, "facilities", "restaurant"); ?> >Restaurants <br>
-                            <input type="checkbox" name="facilities[]" value="bar" <?php echoCheckedArray($formdata, "facilities", "bar"); ?> >Bar <br>
-                            <input type="checkbox" name="facilities[]" value="disabled" <?php echoCheckedArray($formdata, "facilities", "disabled"); ?> >Disabled Access Toilets <br>
+                        <div class="col-md-offset-2 col-md-10">
+                            <button type="submit" class="btn btn-primary">Create Venue</button>
+                            <a href="viewLocations.php" class="btn btn-default">Cancel</a>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label">Url</label>
-                        <div class="col-md-5">
-                            <input type="text" class="control-label" name="link">
-                        </div>
-                        <div class="col-md-4">
-                            <span id="urlError" class="error">
-                                <?php echoValue($errors, 'link');?>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-md-2 control-label">Attach File:</label>
-                        <div class="col-md-5">
-                            <input type="file" class="control-label" name="attachment">
-                        </div>
-                    </div>
-                <button type="submit" name="createLocation" class="btn btn-default pull-right">Create Location <span class="glyphicon glyphicon-send"></span></button>
                 </form>
-                <a class="btn btn-default" href="viewLocations.php"><span class="glyphicon glyphicon-circle-arrow-left"></span> Back</a><!--return/back button-->
             </div>
         </div>
-        <?php require 'utils/footer.php'; ?><!--footer content. file found in utils folder-->
+        <?php require 'utils/footer.php'; ?>
     </body>
 </html>
