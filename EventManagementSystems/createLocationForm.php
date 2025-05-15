@@ -20,7 +20,7 @@ if (!is_logged_in()) {
                 <h1>Create Venue</h1>
                 <p>Please enter the details of the new venue below</p>
                 
-                <form action="createLocation.php" method="POST" class="form-horizontal">
+                <form action="createLocation.php" method="POST" class="form-horizontal" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="Name" class="col-md-2 control-label">Venue Name</label>
                         <div class="col-md-5">
@@ -82,6 +82,13 @@ if (!is_logged_in()) {
                             <span id="maxCapacityError" class="error">
                                 <?php if (isset($errors['MaxCapacity'])) echo $errors['MaxCapacity']; ?>
                             </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="venueImage" class="col-md-2 control-label">Venue Image</label>
+                        <div class="col-md-5">
+                            <input type="file" class="form-control" id="venueImage" name="venueImage" accept="image/*">
+                            <p class="help-block">Select an image for the venue (optional)</p>
                         </div>
                     </div>
                     <div class="form-group">

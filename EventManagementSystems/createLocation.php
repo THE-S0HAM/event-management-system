@@ -56,13 +56,63 @@ else if ($formdata['MaxCapacity'] <= 0) {
     $errors['MaxCapacity'] = "Maximum capacity must be greater than zero";
 }
 
+// Handle image upload
+$imagePath = null;
+if (isset($_FILES['venueImage']) && $_FILES['venueImage']['error'] == 0) {
+    $targetDir = "images/";
+    $fileName = basename($_FILES["venueImage"]["name"]);
+    $targetFilePath = $targetDir . $fileName;
+    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+    
+    // Allow certain file formats
+    $allowTypes = array('jpg', 'jpeg', 'png', 'gif');
+    if (in_array(strtolower($fileType), $allowTypes)) {
+        // Upload file to server
+        if (move_uploaded_file($_FILES["venueImage"]["tmp_name"], $targetFilePath)) {
+            $imagePath = $targetFilePath;
+        }
+    }
+}
+
+// If no image uploaded, set default image based on venue name
+if (!$imagePath) {
+    if (stripos($formdata['Name'], 'Mangal') !== false) {
+        $imagePath = "images/tradinational-wed.jpg";
+    } else if (stripos($formdata['Name'], 'Vivah') !== false || stripos($formdata['Name'], 'Hall') !== false) {
+        $imagePath = "images/sarkharpuda.jpg";
+    } else if (stripos($formdata['Name'], 'Lawn') !== false) {
+        $imagePath = "images/reception.jpg";
+    } else {
+        $imagePath = "images/tradinational-wed.jpg";
+    }
+}
+
 if (empty($errors)) {
     $connection = Connection::getInstance();
     $gateway = new LocationTableGateway($connection);
 
-    $id = $gateway->insert($formdata['Name'], $formdata['Address'], $formdata['ManagerFName'], 
-            $formdata['ManagerLName'], $formdata['ManagerEmail'], $formdata['ManagerNumber'], 
-            $formdata['MaxCapacity']);
+    // First, check if the ImagePath column exists
+    try {
+        $checkColumn = "SHOW COLUMNS FROM `locations` LIKE 'ImagePath'";
+        $result = $connection->query($checkColumn);
+        
+        if ($result->rowCount() == 0) {
+            // Column doesn't exist, add it
+            $alterTable = "ALTER TABLE `locations` ADD COLUMN `ImagePath` varchar(255) DEFAULT NULL";
+            $connection->exec($alterTable);
+        }
+        
+        // Now insert the location with image path
+        $id = $gateway->insert($formdata['Name'], $formdata['Address'], $formdata['ManagerFName'], 
+                $formdata['ManagerLName'], $formdata['ManagerEmail'], $formdata['ManagerNumber'], 
+                $formdata['MaxCapacity'], $imagePath);
+        
+    } catch (PDOException $e) {
+        // If there's an error with the column check or alter, just insert without image path
+        $id = $gateway->insert($formdata['Name'], $formdata['Address'], $formdata['ManagerFName'], 
+                $formdata['ManagerLName'], $formdata['ManagerEmail'], $formdata['ManagerNumber'], 
+                $formdata['MaxCapacity']);
+    }
 
     header('Location: viewLocations.php?success=Venue created successfully');
 }

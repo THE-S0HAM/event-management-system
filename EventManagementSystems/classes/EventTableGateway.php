@@ -90,68 +90,208 @@ class EventTableGateway {
         return $result['count'] == 0; // Returns true if available
     }
     
-    public function insert($p) {
-        $sql = "INSERT INTO events(Title, Description, StartDate, EndDate, Cost, LocationID, CeremonyType, DecorationTheme, CateringOption, ClientID) " .
-                "VALUES (:Title, :Description, :StartDate, :EndDate, :Cost, :LocationID, :CeremonyType, :DecorationTheme, :CateringOption, :ClientID)";
-        
-        $statement = $this->connect->prepare($sql);
-        $params = array(
-            "Title"           => $p->getTitle(),
-            "Description"     => $p->getDescription(),            
-            "StartDate"       => $p->getStartDate(),
-            "EndDate"         => $p->getEndDate(),
-            "Cost"            => $p->getCost(),
-            "LocationID"      => $p->getLocationID(),
-            "CeremonyType"    => $p->getCeremonyType(),
-            "DecorationTheme" => $p->getDecorationTheme(),
-            "CateringOption"  => $p->getCateringOption(),
-            "ClientID"        => $p->getClientID()
-        );
-        
-        $status = $statement->execute($params);
-        
-        if (!$status) {
-            die("Could not insert event");
+    public function insert($p, $imagePath = null) {
+        // Check if ImagePath column exists
+        try {
+            $checkColumn = "SHOW COLUMNS FROM `events` LIKE 'ImagePath'";
+            $result = $this->connect->query($checkColumn);
+            
+            if ($result->rowCount() == 0) {
+                // Column doesn't exist, use old query without ImagePath
+                $sql = "INSERT INTO events(Title, Description, StartDate, EndDate, Cost, LocationID, CeremonyType, DecorationTheme, CateringOption, ClientID) " .
+                        "VALUES (:Title, :Description, :StartDate, :EndDate, :Cost, :LocationID, :CeremonyType, :DecorationTheme, :CateringOption, :ClientID)";
+                
+                $statement = $this->connect->prepare($sql);
+                $params = array(
+                    "Title"           => $p->getTitle(),
+                    "Description"     => $p->getDescription(),            
+                    "StartDate"       => $p->getStartDate(),
+                    "EndDate"         => $p->getEndDate(),
+                    "Cost"            => $p->getCost(),
+                    "LocationID"      => $p->getLocationID(),
+                    "CeremonyType"    => $p->getCeremonyType(),
+                    "DecorationTheme" => $p->getDecorationTheme(),
+                    "CateringOption"  => $p->getCateringOption(),
+                    "ClientID"        => $p->getClientID()
+                );
+            } else {
+                // Column exists, use new query with ImagePath
+                $sql = "INSERT INTO events(Title, Description, StartDate, EndDate, Cost, LocationID, CeremonyType, DecorationTheme, CateringOption, ClientID, ImagePath) " .
+                        "VALUES (:Title, :Description, :StartDate, :EndDate, :Cost, :LocationID, :CeremonyType, :DecorationTheme, :CateringOption, :ClientID, :ImagePath)";
+                
+                $statement = $this->connect->prepare($sql);
+                $params = array(
+                    "Title"           => $p->getTitle(),
+                    "Description"     => $p->getDescription(),            
+                    "StartDate"       => $p->getStartDate(),
+                    "EndDate"         => $p->getEndDate(),
+                    "Cost"            => $p->getCost(),
+                    "LocationID"      => $p->getLocationID(),
+                    "CeremonyType"    => $p->getCeremonyType(),
+                    "DecorationTheme" => $p->getDecorationTheme(),
+                    "CateringOption"  => $p->getCateringOption(),
+                    "ClientID"        => $p->getClientID(),
+                    "ImagePath"       => $imagePath
+                );
+            }
+            
+            $status = $statement->execute($params);
+            
+            if (!$status) {
+                die("Could not insert event");
+            }
+            
+            $id = $this->connect->lastInsertId();
+            
+            return $id;
+        } catch (PDOException $e) {
+            // If there's an error, try without the ImagePath column
+            $sql = "INSERT INTO events(Title, Description, StartDate, EndDate, Cost, LocationID, CeremonyType, DecorationTheme, CateringOption, ClientID) " .
+                    "VALUES (:Title, :Description, :StartDate, :EndDate, :Cost, :LocationID, :CeremonyType, :DecorationTheme, :CateringOption, :ClientID)";
+            
+            $statement = $this->connect->prepare($sql);
+            $params = array(
+                "Title"           => $p->getTitle(),
+                "Description"     => $p->getDescription(),            
+                "StartDate"       => $p->getStartDate(),
+                "EndDate"         => $p->getEndDate(),
+                "Cost"            => $p->getCost(),
+                "LocationID"      => $p->getLocationID(),
+                "CeremonyType"    => $p->getCeremonyType(),
+                "DecorationTheme" => $p->getDecorationTheme(),
+                "CateringOption"  => $p->getCateringOption(),
+                "ClientID"        => $p->getClientID()
+            );
+            
+            $status = $statement->execute($params);
+            
+            if (!$status) {
+                die("Could not insert event");
+            }
+            
+            $id = $this->connect->lastInsertId();
+            
+            return $id;
         }
-        
-        $id = $this->connect->lastInsertId();
-        
-        return $id;
     }
 
-    public function update($p) {
-        $sql = "UPDATE events SET " .
-                "Title = :Title, " . 
-                "Description = :Description, " .                
-                "StartDate = :StartDate, " .
-                "EndDate = :EndDate, " .
-                "Cost = :Cost, " .
-                "LocationID = :LocationID, " .
-                "CeremonyType = :CeremonyType, " .
-                "DecorationTheme = :DecorationTheme, " .
-                "CateringOption = :CateringOption, " .
-                "ClientID = :ClientID " .
-                "WHERE eventID = :id";
-        
-        $statement = $this->connect->prepare($sql);
-        $params = array(
-            "Title"          => $p->getTitle(),
-            "Description"    => $p->getDescription(),            
-            "StartDate"      => $p->getStartDate(),
-            "EndDate"        => $p->getEndDate(),
-            "Cost"           => $p->getCost(),
-            "LocationID"     => $p->getLocationID(),
-            "CeremonyType"   => $p->getCeremonyType(),
-            "DecorationTheme" => $p->getDecorationTheme(),
-            "CateringOption" => $p->getCateringOption(),
-            "ClientID"       => $p->getClientID(),
-            "id"             => $p->getId()
-        );
-        
-        $status = $statement->execute($params);
-        
-        if (!$status) {
-            die("Could not update event details");
+    public function update($p, $imagePath = null) {
+        try {
+            // Check if ImagePath column exists
+            $checkColumn = "SHOW COLUMNS FROM `events` LIKE 'ImagePath'";
+            $result = $this->connect->query($checkColumn);
+            
+            if ($result->rowCount() == 0) {
+                // Column doesn't exist, use old query without ImagePath
+                $sql = "UPDATE events SET " .
+                        "Title = :Title, " . 
+                        "Description = :Description, " .                
+                        "StartDate = :StartDate, " .
+                        "EndDate = :EndDate, " .
+                        "Cost = :Cost, " .
+                        "LocationID = :LocationID, " .
+                        "CeremonyType = :CeremonyType, " .
+                        "DecorationTheme = :DecorationTheme, " .
+                        "CateringOption = :CateringOption, " .
+                        "ClientID = :ClientID " .
+                        "WHERE eventID = :id";
+                
+                $statement = $this->connect->prepare($sql);
+                $params = array(
+                    "Title"          => $p->getTitle(),
+                    "Description"    => $p->getDescription(),            
+                    "StartDate"      => $p->getStartDate(),
+                    "EndDate"        => $p->getEndDate(),
+                    "Cost"           => $p->getCost(),
+                    "LocationID"     => $p->getLocationID(),
+                    "CeremonyType"   => $p->getCeremonyType(),
+                    "DecorationTheme" => $p->getDecorationTheme(),
+                    "CateringOption" => $p->getCateringOption(),
+                    "ClientID"       => $p->getClientID(),
+                    "id"             => $p->getId()
+                );
+            } else {
+                // Column exists, use new query with ImagePath
+                $sql = "UPDATE events SET " .
+                        "Title = :Title, " . 
+                        "Description = :Description, " .                
+                        "StartDate = :StartDate, " .
+                        "EndDate = :EndDate, " .
+                        "Cost = :Cost, " .
+                        "LocationID = :LocationID, " .
+                        "CeremonyType = :CeremonyType, " .
+                        "DecorationTheme = :DecorationTheme, " .
+                        "CateringOption = :CateringOption, " .
+                        "ClientID = :ClientID";
+                
+                // Add image path to update if provided
+                if ($imagePath !== null) {
+                    $sql .= ", ImagePath = :ImagePath";
+                }
+                
+                $sql .= " WHERE eventID = :id";
+                
+                $statement = $this->connect->prepare($sql);
+                $params = array(
+                    "Title"          => $p->getTitle(),
+                    "Description"    => $p->getDescription(),            
+                    "StartDate"      => $p->getStartDate(),
+                    "EndDate"        => $p->getEndDate(),
+                    "Cost"           => $p->getCost(),
+                    "LocationID"     => $p->getLocationID(),
+                    "CeremonyType"   => $p->getCeremonyType(),
+                    "DecorationTheme" => $p->getDecorationTheme(),
+                    "CateringOption" => $p->getCateringOption(),
+                    "ClientID"       => $p->getClientID(),
+                    "id"             => $p->getId()
+                );
+                
+                // Add image path to params if provided
+                if ($imagePath !== null) {
+                    $params["ImagePath"] = $imagePath;
+                }
+            }
+            
+            $status = $statement->execute($params);
+            
+            if (!$status) {
+                die("Could not update event details");
+            }
+        } catch (PDOException $e) {
+            // If there's an error, try without the ImagePath column
+            $sql = "UPDATE events SET " .
+                    "Title = :Title, " . 
+                    "Description = :Description, " .                
+                    "StartDate = :StartDate, " .
+                    "EndDate = :EndDate, " .
+                    "Cost = :Cost, " .
+                    "LocationID = :LocationID, " .
+                    "CeremonyType = :CeremonyType, " .
+                    "DecorationTheme = :DecorationTheme, " .
+                    "CateringOption = :CateringOption, " .
+                    "ClientID = :ClientID " .
+                    "WHERE eventID = :id";
+            
+            $statement = $this->connect->prepare($sql);
+            $params = array(
+                "Title"          => $p->getTitle(),
+                "Description"    => $p->getDescription(),            
+                "StartDate"      => $p->getStartDate(),
+                "EndDate"        => $p->getEndDate(),
+                "Cost"           => $p->getCost(),
+                "LocationID"     => $p->getLocationID(),
+                "CeremonyType"   => $p->getCeremonyType(),
+                "DecorationTheme" => $p->getDecorationTheme(),
+                "CateringOption" => $p->getCateringOption(),
+                "ClientID"       => $p->getClientID(),
+                "id"             => $p->getId()
+            );
+            
+            $status = $statement->execute($params);
+            
+            if (!$status) {
+                die("Could not update event details");
+            }
         }
     }
     

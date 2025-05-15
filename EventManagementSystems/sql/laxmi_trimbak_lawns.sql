@@ -30,17 +30,18 @@ CREATE TABLE `events` (
   `CeremonyType` varchar(100) DEFAULT NULL,
   `DecorationTheme` varchar(100) DEFAULT NULL,
   `CateringOption` varchar(100) DEFAULT NULL,
-  `ClientID` int(11) DEFAULT NULL
+  `ClientID` int(11) DEFAULT NULL,
+  `ImagePath` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `events`
 --
 
-INSERT INTO `events` (`EventID`, `Title`, `Description`, `StartDate`, `EndDate`, `Cost`, `LocationID`, `CeremonyType`, `DecorationTheme`, `CateringOption`, `ClientID`) VALUES
-(1, 'Sharma Wedding', 'Traditional Marathi Wedding Ceremony', '15-Dec-2023', '18-Dec-2023', 150000, 1, 'Wedding', 'Marathi Traditional', 'Veg Deluxe', 1),
-(2, 'Patel Engagement', 'Sakharpuda Ceremony', '10-Jan-2024', '10-Jan-2024', 50000, 2, 'Sakharpuda', 'Royal Rajasthani', 'Veg Standard', 2),
-(3, 'Desai Reception', 'Evening Reception Party', '12-Feb-2024', '12-Feb-2024', 75000, 3, 'Reception', 'Bollywood Glam', 'Veg & Non-Veg Deluxe', 3);
+INSERT INTO `events` (`EventID`, `Title`, `Description`, `StartDate`, `EndDate`, `Cost`, `LocationID`, `CeremonyType`, `DecorationTheme`, `CateringOption`, `ClientID`, `ImagePath`) VALUES
+(1, 'Sharma Wedding', 'Traditional Marathi Wedding Ceremony with complete arrangements for havan, mandap, and all traditional customs. The venue will be decorated in Marathi Traditional theme with marigold flowers and traditional elements.', '15-Dec-2023', '18-Dec-2023', 150000, 1, 'Wedding', 'Marathi Traditional', 'Veg Deluxe', 1, 'images/tradinational-wed.jpg'),
+(2, 'Patel Engagement', 'Traditional Sakharpuda Ceremony with Royal Rajasthani decoration theme. The venue will be decorated with vibrant colors, mirror work and Rajasthani elements. Veg Standard catering will be provided for all guests.', '10-Jan-2024', '10-Jan-2024', 50000, 2, 'Sakharpuda', 'Royal Rajasthani', 'Veg Standard', 2, 'images/sarkharpuda.jpg'),
+(3, 'Desai Reception', 'Evening Reception Party with Bollywood Glam decoration theme. The spacious Lawn A will be transformed with modern styling and glamorous elements inspired by Bollywood. Veg & Non-Veg Deluxe catering will be provided.', '12-Feb-2024', '12-Feb-2024', 75000, 3, 'Reception', 'Bollywood Glam', 'Veg & Non-Veg Deluxe', 3, 'images/reception.jpg');
 
 -- --------------------------------------------------------
 
@@ -56,17 +57,18 @@ CREATE TABLE `locations` (
   `ManagerLName` varchar(255) NOT NULL,
   `ManagerEmail` varchar(255) NOT NULL,
   `ManagerNumber` varchar(15) NOT NULL,
-  `MaxCapacity` int(11) NOT NULL
+  `MaxCapacity` int(11) NOT NULL,
+  `ImagePath` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `locations`
 --
 
-INSERT INTO `locations` (`LocationID`, `Name`, `Address`, `ManagerFName`, `ManagerLName`, `ManagerEmail`, `ManagerNumber`, `MaxCapacity`) VALUES
-(1, 'Mangal Karyalay', 'JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709', 'Sunil', 'Patil', 'laxmitribaklawns@gmail.com', '9876543210', 500),
-(2, 'Vivah Hall', 'JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709', 'Rahul', 'Sharma', 'laxmitribaklawns@gmail.com', '9876543210', 300),
-(3, 'Lawn A', 'JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709', 'Amit', 'Desai', 'laxmitribaklawns@gmail.com', '9876543210', 800);
+INSERT INTO `locations` (`LocationID`, `Name`, `Address`, `ManagerFName`, `ManagerLName`, `ManagerEmail`, `ManagerNumber`, `MaxCapacity`, `ImagePath`) VALUES
+(1, 'Mangal Karyalay', 'JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709', 'Sunil', 'Patil', 'laxmitribaklawns@gmail.com', '9876543210', 500, 'images/tradinational-wed.jpg'),
+(2, 'Vivah Hall', 'JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709', 'Rahul', 'Sharma', 'laxmitribaklawns@gmail.com', '9876543210', 300, 'images/sarkharpuda.jpg'),
+(3, 'Lawn A', 'JM5G+VP5, Waladgaon, Shrirampur, Maharashtra 413709', 'Amit', 'Desai', 'laxmitribaklawns@gmail.com', '9876543210', 800, 'images/reception.jpg');
 
 -- --------------------------------------------------------
 
@@ -283,17 +285,13 @@ ALTER TABLE `catering_options`
 -- Indexes for table `feedback`
 --
 ALTER TABLE `feedback`
-  ADD PRIMARY KEY (`FeedbackID`),
-  ADD KEY `EventID` (`EventID`),
-  ADD KEY `ClientID` (`ClientID`);
+  ADD PRIMARY KEY (`FeedbackID`);
 
 --
 -- Indexes for table `payments`
 --
 ALTER TABLE `payments`
-  ADD PRIMARY KEY (`PaymentID`),
-  ADD KEY `EventID` (`EventID`),
-  ADD KEY `ClientID` (`ClientID`);
+  ADD PRIMARY KEY (`PaymentID`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -350,20 +348,6 @@ ALTER TABLE `payments`
 ALTER TABLE `events`
   ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`LocationID`) REFERENCES `locations` (`LocationID`),
   ADD CONSTRAINT `events_ibfk_2` FOREIGN KEY (`ClientID`) REFERENCES `clients` (`ClientID`);
-
---
--- Constraints for table `feedback`
---
-ALTER TABLE `feedback`
-  ADD CONSTRAINT `feedback_ibfk_1` FOREIGN KEY (`EventID`) REFERENCES `events` (`EventID`),
-  ADD CONSTRAINT `feedback_ibfk_2` FOREIGN KEY (`ClientID`) REFERENCES `clients` (`ClientID`);
-
---
--- Constraints for table `payments`
---
-ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`EventID`) REFERENCES `events` (`EventID`),
-  ADD CONSTRAINT `payments_ibfk_2` FOREIGN KEY (`ClientID`) REFERENCES `clients` (`ClientID`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

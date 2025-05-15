@@ -42,9 +42,72 @@ if (!$isAvailable) {
     exit;
 }
 
+// Handle image upload
+$imagePath = null;
+if (isset($_FILES['eventImage']) && $_FILES['eventImage']['error'] == 0) {
+    $targetDir = "images/";
+    $fileName = basename($_FILES["eventImage"]["name"]);
+    $targetFilePath = $targetDir . $fileName;
+    $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+    
+    // Allow certain file formats
+    $allowTypes = array('jpg', 'jpeg', 'png', 'gif');
+    if (in_array(strtolower($fileType), $allowTypes)) {
+        // Upload file to server
+        if (move_uploaded_file($_FILES["eventImage"]["tmp_name"], $targetFilePath)) {
+            $imagePath = $targetFilePath;
+        }
+    }
+}
+
+// If no image uploaded, set default image based on ceremony type
+if (!$imagePath) {
+    if ($ceremonyType) {
+        switch(strtolower($ceremonyType)) {
+            case 'wedding':
+                $imagePath = "images/tradinational-wed.jpg";
+                break;
+            case 'reception':
+                $imagePath = "images/reception.jpg";
+                break;
+            case 'engagement':
+            case 'sakharpuda':
+                $imagePath = "images/sarkharpuda.jpg";
+                break;
+            case 'sangeet':
+            case 'mehendi':
+            case 'haldi':
+                $imagePath = "images/sangeet.jpg";
+                break;
+            default:
+                $imagePath = "images/tradinational-wed.jpg";
+        }
+    } else {
+        $imagePath = "images/tradinational-wed.jpg";
+    }
+}
+
 // Create the event
 $event = new Event(null, $title, $description, $formattedStartDate, $formattedEndDate, $cost, $locationID, $ceremonyType, $decorationTheme, $cateringOption, $clientID);
-$id = $gateway->insert($event);
+
+// First, check if the ImagePath column exists
+try {
+    $checkColumn = "SHOW COLUMNS FROM `events` LIKE 'ImagePath'";
+    $result = $connection->query($checkColumn);
+    
+    if ($result->rowCount() == 0) {
+        // Column doesn't exist, add it
+        $alterTable = "ALTER TABLE `events` ADD COLUMN `ImagePath` varchar(255) DEFAULT NULL";
+        $connection->exec($alterTable);
+    }
+    
+    // Now insert the event with image path
+    $id = $gateway->insert($event, $imagePath);
+    
+} catch (PDOException $e) {
+    // If there's an error with the column check or alter, just insert without image path
+    $id = $gateway->insert($event);
+}
 
 // Redirect to the event list
 header("Location: viewEvents.php");

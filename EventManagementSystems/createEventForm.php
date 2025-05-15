@@ -42,7 +42,7 @@ $selectedClientId = isset($_GET['clientId']) ? $_GET['clientId'] : null;
                 <h1>Create Event</h1>
                 <p>Please enter the details of the new event below</p>
                 
-                <form action="createEvent.php" method="POST" class="form-horizontal">
+                <form action="createEvent.php" method="POST" class="form-horizontal" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="title" class="col-md-2 control-label">Event Title</label>
                         <div class="col-md-5">
@@ -155,6 +155,14 @@ $selectedClientId = isset($_GET['clientId']) ? $_GET['clientId'] : null;
                                 }
                                 ?>
                             </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="eventImage" class="col-md-2 control-label">Event Image</label>
+                        <div class="col-md-5">
+                            <input type="file" class="form-control" id="eventImage" name="eventImage" accept="image/*">
+                            <p class="help-block">Select an image for the event (optional)</p>
                         </div>
                     </div>
                     
